@@ -1,8 +1,3 @@
-# request_test_phone
+# Request Test Phone
 
-A new Flutter project.
-
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+Simple cross platform resource requesting tool app 
