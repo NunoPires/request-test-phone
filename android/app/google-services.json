@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "498800530921",
+    "firebase_url": "https://request-my-test-phone.firebaseio.com",
+    "project_id": "request-my-test-phone",
+    "storage_bucket": "request-my-test-phone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498800530921:android:8dd40cdd50c68c68",
+        "android_client_info": {
+          "package_name": "com.premiumminds.requestmyphone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498800530921-m0g76qknig3mdsvi5vmg4uc3ld6ufc7s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeZKBUgPSkRTTGkfyCT9aIkXiwv25fXs4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
