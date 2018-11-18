@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'widget/PhoneSelector.dart';
 
 final ThemeData kiOSTheme = new ThemeData(
   primarySwatch: Colors.blue,
@@ -39,8 +40,7 @@ class PhoneListScreen extends StatefulWidget {
 class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProviderStateMixin {
 
   final List<PhoneRequestListItem> _requests = <PhoneRequestListItem>[];
-  final TextEditingController _textController = new TextEditingController();
-  bool _isWriting = false;
+  final TextEditingController _textInputController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +102,29 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
   }
 
   Widget _buildRequestDialog() {
+
+    final key = new GlobalKey<PhoneSelectorState>();
+    final PhoneSelector selector = new PhoneSelector(key: key);
+
     return new AlertDialog(
       title: new Text("Request Phone"),
+      titlePadding: EdgeInsets.only(left: 16.0, top: 8.0),
       content: new Container(
         child: new Column(
           children: <Widget>[
             new Container(
                 decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-                child: _buildTextComposer()
+                child: _buildTextInput()
+            ),
+            new Container(
+              margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 2.0),
+              decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget> [
+                 selector
+                ]
+              ),
             )
           ]
         )
@@ -119,38 +134,40 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
             onPressed: () {
               Navigator.of(context).pop();
             },
+            textColor: Colors.black,
             child: new Text("CANCEL")
         ),
         new RaisedButton(
             onPressed: () {
-              _requestPhone();
+              _requestPhone(_textInputController.text, key.currentState.createdObject);
               Navigator.of(context).pop();
             },
+            color: Theme.of(context).primaryColor,
+            textColor: Colors.white,
             child: new Text("SUBMIT")
         )
       ],
     );
   }
 
-  Widget _buildTextComposer() {
+  Widget _buildTextInput() {
     return new Container(
-        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+        margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
         child: new Row(
             children: <Widget>[
               new Flexible(
-                child: new TextField(
+                child: new TextFormField(
                   autofocus: true,
                   keyboardType: TextInputType.text,
                   //textInputAction: TextInputAction.continueAction,
                   maxLength: 100,
                   maxLines: 1,
-                  controller: _textController,
-                  onChanged: (String text) {
-                    setState(() {
-                      _isWriting = text.length > 0;
-                    });
+                  controller: _textInputController,
+                  validator: (value) {
+                    if(value.isEmpty) {
+                      return "Your name must not be empty!";
+                    }
                   },
-                  onSubmitted: _submitRequest,
                   decoration: new InputDecoration(
                       labelText: "Enter your name:",
                       //hintText: "Type your name",
@@ -185,7 +202,9 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
   }
 
   // Aux functions
-  void _requestPhone() {
+  void _requestPhone(String name, PhoneListItem phone) {
+
+    print(phone.name);
     setState(() {
 
     });
@@ -193,10 +212,7 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
 
   void _submitRequest(String requester) {
 
-    _textController.clear();
-    setState(() {
-      _isWriting = false;
-    });
+    _textInputController.clear();
 
     PhoneRequestListItem request = new PhoneRequestListItem(
       requestName: requester,
@@ -262,8 +278,4 @@ class PhoneRequestListItem extends StatelessWidget {
         )
     );
   }
-}
-
-class PhoneListItem extends PhoneRequestListItem {
-
 }
