@@ -41,9 +41,20 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
 
   final List<PhoneRequestListItem> _requests = <PhoneRequestListItem>[];
   final TextEditingController _textInputController = new TextEditingController();
+  final List<DropdownMenuItem<PhoneListItem>> _items =  [];
 
   @override
   Widget build(BuildContext context) {
+
+    _items.clear();
+    _getPhones().then((value) {
+      value.forEach((item) {
+        _items.add(item);
+      });
+    }).catchError((error) {
+      print(error);
+    });
+
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Sóce, orienta o móvel"),
@@ -104,7 +115,7 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
   Widget _buildRequestDialog() {
 
     final key = new GlobalKey<PhoneSelectorState>();
-    final PhoneSelector selector = new PhoneSelector(key: key);
+    final PhoneSelector selector = new PhoneSelector(key: key, items: _items);
 
     return new AlertDialog(
       title: new Text("Request Phone"),
@@ -148,6 +159,20 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
         )
       ],
     );
+  }
+
+  static Future<List<DropdownMenuItem<PhoneListItem>>> _getPhones() async {
+
+    final List<DropdownMenuItem<PhoneListItem>> _list =  [];
+
+    CollectionReference ref = Firestore.instance.collection('phone');
+    QuerySnapshot query = await ref.getDocuments();
+
+    query.documents.forEach((data) {
+      _list.add(new DropdownMenuItem(child: new Text(data['name']), value: new PhoneListItem(id: data['id'], name: data['name'])));
+    });
+
+    return _list;
   }
 
   Widget _buildTextInput() {
@@ -204,7 +229,12 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
   // Aux functions
   void _requestPhone(String name, PhoneListItem phone) {
 
-    print(phone.name);
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      final CollectionReference requests = Firestore.instance.collection('request');
+
+      await requests.add({'name': name, 'phone_id': phone.id, 'status': "PENDING"});
+    });
+
     setState(() {
 
     });
