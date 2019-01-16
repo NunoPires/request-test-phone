@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'widget/PhoneSelector.dart';
+import 'widget/RequestList.dart';
 
 final ThemeData kiOSTheme = new ThemeData(
   primarySwatch: Colors.blue,
@@ -63,29 +64,9 @@ class PhoneRequestListScreenState extends State<PhoneListScreen> with TickerProv
         body: new Container(
             child: new Column(
                 children: <Widget>[
-                  /*new Flexible(
-                      child: new ListView.builder(
-
-                        reverse: false, // start from the top of the screen
-                        itemBuilder: (_, int index) => _requests[index],
-                        itemCount: _requests.length,
-                      )
-                  ),*/
-                  new StreamBuilder(
-                      stream: Firestore.instance.collection('phone').snapshots(),
-                      builder: (context, snapshot) {
-                        if(!snapshot.hasData) return new Text("Loading");
-                        return new ListView.builder(
-                            itemCount: snapshot.data.documents.length,
-                            padding: EdgeInsets.all(8.0),
-                            itemExtent: 25.0,
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot ds = snapshot.data.documents[index];
-                              _insertPhone(ds);
-                            }
-                        );
-                      }
-                  )
+                  new Flexible(
+                      child: new RequestList()
+                  ),
                 ],
             ),
             decoration: Theme.of(context).platform == TargetPlatform.iOS
