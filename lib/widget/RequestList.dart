@@ -32,7 +32,7 @@ class RequestListState extends State<RequestList> {
 
     return FutureBuilder(
       future: _getPhoneNameList(snapshot),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> asyncSnap) {
+      builder: (BuildContext context, AsyncSnapshot<Map<int,String>> asyncSnap) {
 
         switch(asyncSnap.connectionState) {
           case ConnectionState.none:
@@ -59,7 +59,7 @@ class RequestListState extends State<RequestList> {
     );
   }
 
-  Widget _buildListItem(Request request, List<String> names) {
+  Widget _buildListItem(Request request, Map<int,String> names) {
 
     return Center(
         child: Card(
@@ -70,7 +70,7 @@ class RequestListState extends State<RequestList> {
                 ListTile(
                   contentPadding: EdgeInsets.only(left: 10.0, top: 0, bottom: 0),
                   leading: Icon(Icons.phone_iphone),
-                  title: Text('Phone: ' + names[request.phoneId - 1]),
+                  title: Text('Phone: ' + names[request.phoneId]),
                   subtitle: Text('Requested by: ' + request.name),
                 ),
                 ButtonTheme.bar(
@@ -93,18 +93,19 @@ class RequestListState extends State<RequestList> {
     );
   }
 
-  Future<List<String>> _getPhoneNameList(List<DocumentSnapshot> snapshot) async {
+  Future<Map<int, String>> _getPhoneNameList(List<DocumentSnapshot> snapshot) async {
 
-    List<String> phones = new List();
+    Map<int, String> phones = new Map();
     for (var document in snapshot) {
 
       Request request = Request.fromSnapshot(document);
+      int phoneId = request.phoneId;
       String name;
-      name = await Firestore.instance.collection('phone').where('id', isEqualTo: request.phoneId).getDocuments().then((snapshot) {
+      name = await Firestore.instance.collection('phone').where('id', isEqualTo: phoneId).getDocuments().then((snapshot) {
         return snapshot.documents[0]['name'];
       });
 
-      phones.add(name);
+      phones[phoneId] = name;
     }
 
     return phones;
